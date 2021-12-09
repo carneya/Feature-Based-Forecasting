@@ -1,0 +1,245 @@
+---
+title: "Feature-based Time Series Forecasting"
+subtitle: "Why R? 2021"
+author: "Thiyanga S. Talagala"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: 
+      - default
+      - default-fonts
+      - duke-blue
+      - hygge-duke
+      - libs/cc-fonts.css
+      - libs/figure-captions.css
+      - xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#081d58",
+  text_bold_color = "#ce1256",
+  title_slide_text_color = "#edf8b1",
+  header_font_google = google_font("Josefin Sans"),
+  base_font_size = "20px",
+  text_font_size = "1.5rem",
+  code_font_size = "1rem"
+ #text_font_google   = google_font("Montserrat", "300", "300i")
+ # code_font_google   = google_font("Fira Mono")
+)
+```
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+class: center, middle
+
+background-image: url(img/shopping.jpg)
+background-size: contain
+class: center, top, inverse
+
+---
+background-image: url(img/bananas.jpg)
+class: center, top, inverse
+---
+
+## Banana Sales
+
+.pull-left[
+
+
+```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE, size="tiny"}
+library(Mcomp)
+library(tsibble)
+library(lubridate)
+library(tidyverse)
+set.seed(1)
+bananas <- M3$N2012$x
+mth <- make_date("2011") + months(5:130)
+bananas <- tibble(
+  Time = yearmonth(mth), 
+  Sales = bananas)
+bananas <- as_tsibble(bananas)
+bananas
+```
+
+
+]
+
+.pull-right[
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(fable)
+bananas %>% 
+  autoplot(Sales)
+```
+
+]
+
+---
+
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#666666", "#666666", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+
+---
+
+
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#666666", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#984ea3")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+
+
+---
+class: center, middle
+
+# Time series are everywhere. 
+
+---
+
+
+

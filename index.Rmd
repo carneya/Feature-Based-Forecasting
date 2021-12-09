@@ -57,6 +57,7 @@ library(forecast)
 library(tidyr)
 library(rlang)
 library(tidyverse)
+library(tsfeatures)
 ```
 class: center, middle
 
@@ -882,36 +883,151 @@ background-size: contain
 
 
 
-## FFORMS: **F**eature-based **FOR**ecast **M**odel **S**election
+### FFORMS: **F**eature-based **FOR**ecast **M**odel **S**election
 
-`seer` package in R
+
+.pull-left[
+
+seer (magic ball)
+
+```{r   out.width = "50%", echo = FALSE, fig.cap=''}
+knitr::include_graphics("img/seer.png")
+```
+
+
+```{r, comment=NA, eval=FALSE}
+install.packages("seer")
+#library(devtools)
+#install_github("thiyangt/seer")
+library(seer)
+```
+
+]
+
+--
+
+.pull-right[
+
+Acropolis Museum, Athens, Greece
+
+```{r   out.width = "60%", echo = FALSE, fig.cap=''}
+knitr::include_graphics("img/greece.JPG")
+```
+
+
+
+]
+
 
 ---
-## Results: M4 Competition data
+## seer package
 
-\begin{table}[!h]
-\centering\scriptsize\tabcolsep=0.12cm
-\begin{tabular}{l|rrrrrr}
- & Yearly & Quarterly & Monthly & Weekly & Daily & Hourly \\\hline
-\textcolor{red}{FFORMS} & 3.17 &  1.20 &  0.98&  2.31& 3.57 &  0.84\\\hline
-auto.arima & 3.40 &1.17  &0.93  & 2.55 &  -& - \\
-ets & 3.44 &  1.16& 0.95 &  -&-  &  -\\
-theta & 3.37 &1.24  & 0.97 &2.64  & 3.33 & 1.59 \\
-rwd & 3.07 & 1.33 & 1.18  & 2.68  & 3.25 & 11.45 \\
-rw & 3.97 & 1.48 & 1.21  &2.78  & 3.27 & 11.60 \\
-nn & 4.06 & 1.55 &  1.14 &4.04 & 3.90 & 1.09 \\
-stlar & - & 2.02 &  1.33& 3.15 & 4.49 & 1.49 \\
-snaive & - &  1.66& 1.26 &  2.78& 24.46 & 2.86 \\
-tbats & - & 1.19 &  1.05& 2.49 & 3.27 &  1.30\\
-wn & 13.42 &  6.50&  4.11&  49.91& 38.07 & 11.68 \\
-mstlarima & - & - &  - & - & 3.84 &  1.12\\
-mstlets & - &  - &  - &  - & 3.73 &  1.23\\
-combination (mean) & 4.09 & 1.58 &  1.16&6.96  & 7.94 & 3.93 \\\hline
-M4-1st & 2.98 & 1.12 &  0.88& 2.36 & 3.45 & 0.89\\
-M4-2nd & 3.06 & 1.11 &  0.89& 2.11 & 3.34 & 0.81\\
-M4-3rd & 3.13 & 1.23 &  0.95& 2.16 & 2.64 & 0.87\\\hline
-\end{tabular}
-\end{table}
+**Training set**
+
+```{r, comment=NA}
+library(Mcomp)
+data(M1)
+yearly_m1 <- subset(M1, "yearly")
+yearly_m1
+```
+
+**Test set**
+
+```{r, comment=NA}
+data(M3)
+yearly_m3 <- subset(M3, "yearly")
+m3y <- M3[1:2]
+m3y
+```
+
+
+---
+## seer package: `cal_features`
+
+```{r, echo=FALSE, warning=F, message=FALSE, comment=NA}
+library(seer)
+features_m1 <- cal_features(yearly_m1, database="M1", h=6, highfreq = FALSE)
+features_m1
+```
+
+
+
+---
+## seer package: `fcast_accuracy`
+
+
+```{r, comment=NA, message=FALSE}
+accuracy_m1 <- fcast_accuracy(tslist=yearly_m1, 
+                              models= c("arima","ets","rw","rwd", "theta", "nn"), 
+                              database ="M1", cal_MASE, h=6, length_out = 1, fcast_save = TRUE)
+accuracy_m1
+```
+
+
+---
+## seer package: `prepare_trainingset`
+
+```{r, comment=NA, message=FALSE}
+prep_tset <- prepare_trainingset(accuracy_set = accuracy_m1, feature_set = features_m1)
+prep_tset
+```
+
+---
+
+## seer package: `prepare_trainingset`
+
+```{r, comment=NA, message=FALSE}
+prep_tset$trainingset
+```
+
+---
+## seer package
+
+```{r, comment=NA, cache=TRUE}
+M3yearly_features <- seer::cal_features(yearly_m3, database="M3", h=6, highfreq = FALSE)
+head(M3yearly_features)
+```
+
+
+---
+
+
+## seer package: `build_rf`
+
+```{r, comment=NA, message=FALSE, warning=F}
+rf <- build_rf(training_set = prep_tset$trainingset, testset=M3yearly_features, 
+               rf_type="rcp", ntree=100, 
+               seed=1, 
+               import=FALSE, mtry = 8)
+rf$predictions
+```
+
+
+---
+
+## seer package: `rf_forecast`
+
+```{r, comment=NA, message=FALSE}
+predictedlabels_m3 <- rf$predictions
+forecasts <- rf_forecast(predictions=predictedlabels_m3[1:2], tslist=yearly_m3[1:2], database="M3", function_name="cal_MASE", h=6, accuracy=TRUE)
+forecasts$mean
+```
+
+---
+
+## seer package: `rf_forecast`
+
+```{r, comment=NA, message=FALSE}
+forecasts$lower
+forecasts$upper
+```
+
+
+
+---
+background-image:url(img/m4results.png)
+background-size: contain
+
 
 
 ---
@@ -953,11 +1069,11 @@ other features?]]]
 ---
 class: inverse, middle, center
 
- **Which** features are the most important? 
+ ## .yellow[Which] features are the most important? 
 
- **Where** are they important?
+ ## .yellow[Where] are they important?
 
- **How** are they important?
+ ## .yellow[How] are they important?
 
 ---
 
@@ -971,10 +1087,47 @@ Overall role of features in the choice of different forecast-model selection.
 - Mean decrease in Gini coefficient
 - Partial dependence plots (Jerome H. Friedman, 2001)
 - Individual Conditional Expectation (ICE) curves (Goldstein et al.,2015; Zhao and Hastie, 2017)
-                                                       
----
 
-## Partial dependence plots and ICE curves
+---
+Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p1.png")
+```
+
+---
+Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p2.png")
+```                                                       
+---
+Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p3.png")
+```  
+
+---
+ Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p4.png")
+```  
+
+---
+Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p6.png")
+```  
+
+---
+Partial dependence plots and ICE curves
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+include_graphics("img/p7.png")
+```  
 
 ---
 class: inverse, middle, center
@@ -996,7 +1149,7 @@ background-size: contain
 ---
 class: inverse, middle, center
 
-## **When and how** are features linked with the prediction outcome?
+## .yellow[When and how] are features linked with the prediction outcome?
 
 
 ---
@@ -1033,7 +1186,7 @@ knitr::include_graphics("img/en_pdp4.png")
 ---
 class: inverse, middle, center
 
-## **When and how strongly** do features interact with other features?
+### .yellow[When and how strongly] do features interact with other features?
                                                        
 ---
 
@@ -1081,3 +1234,17 @@ background-size: contain
 ---
 background-image: url(img/local3.png)
 background-size: contain
+
+---
+
+## Thank you
+
+.pull-left[
+
+
+]
+
+.pull-right[
+
+
+]

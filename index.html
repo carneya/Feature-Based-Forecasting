@@ -536,23 +536,173 @@ background-size: contain
 `seer` package in R
 
 ---
+## Results: M4 Competition data
 
+\begin{table}[!h]
+\centering\scriptsize\tabcolsep=0.12cm
+\begin{tabular}{l|rrrrrr}
+ &amp; Yearly &amp; Quarterly &amp; Monthly &amp; Weekly &amp; Daily &amp; Hourly \\\hline
+\textcolor{red}{FFORMS} &amp; 3.17 &amp;  1.20 &amp;  0.98&amp;  2.31&amp; 3.57 &amp;  0.84\\\hline
+auto.arima &amp; 3.40 &amp;1.17  &amp;0.93  &amp; 2.55 &amp;  -&amp; - \\
+ets &amp; 3.44 &amp;  1.16&amp; 0.95 &amp;  -&amp;-  &amp;  -\\
+theta &amp; 3.37 &amp;1.24  &amp; 0.97 &amp;2.64  &amp; 3.33 &amp; 1.59 \\
+rwd &amp; 3.07 &amp; 1.33 &amp; 1.18  &amp; 2.68  &amp; 3.25 &amp; 11.45 \\
+rw &amp; 3.97 &amp; 1.48 &amp; 1.21  &amp;2.78  &amp; 3.27 &amp; 11.60 \\
+nn &amp; 4.06 &amp; 1.55 &amp;  1.14 &amp;4.04 &amp; 3.90 &amp; 1.09 \\
+stlar &amp; - &amp; 2.02 &amp;  1.33&amp; 3.15 &amp; 4.49 &amp; 1.49 \\
+snaive &amp; - &amp;  1.66&amp; 1.26 &amp;  2.78&amp; 24.46 &amp; 2.86 \\
+tbats &amp; - &amp; 1.19 &amp;  1.05&amp; 2.49 &amp; 3.27 &amp;  1.30\\
+wn &amp; 13.42 &amp;  6.50&amp;  4.11&amp;  49.91&amp; 38.07 &amp; 11.68 \\
+mstlarima &amp; - &amp; - &amp;  - &amp; - &amp; 3.84 &amp;  1.12\\
+mstlets &amp; - &amp;  - &amp;  - &amp;  - &amp; 3.73 &amp;  1.23\\
+combination (mean) &amp; 4.09 &amp; 1.58 &amp;  1.16&amp;6.96  &amp; 7.94 &amp; 3.93 \\\hline
+M4-1st &amp; 2.98 &amp; 1.12 &amp;  0.88&amp; 2.36 &amp; 3.45 &amp; 0.89\\
+M4-2nd &amp; 3.06 &amp; 1.11 &amp;  0.89&amp; 2.11 &amp; 3.34 &amp; 0.81\\
+M4-3rd &amp; 3.13 &amp; 1.23 &amp;  0.95&amp; 2.16 &amp; 2.64 &amp; 0.87\\\hline
+\end{tabular}
+\end{table}
+
+
+---
+class: inverse
 background-image: url(img/forest.jpg)
 background-size: cover
 
-# Random forest
+## Random forest
+
+---
+class: center, inverse, middle
+background-image: url(img/forest.jpg)
+background-size: cover
+
+# Can we trust ML-algorithms if we don't know how it works?
+
+---
+class: inverse
+background-image: url(img/forest.jpg)
+background-size: cover
+
+## Peeking inside FFORMS Random forest
+
+.full-width[.content-box-yellow[.black[
+
+- **Which** features are the most important? 
+
+- **Where** are they important?
+
+- **How** are they important?
+
+- **When and how** are features linked with the prediction
+outcome?
+
+- **When and how strongly** do features interact with
+other features?]]]
+
 
 ---
 
-background-image: url(img/forest.jpg)
-background-size: cover
+## Global explanation of feature contribution
+
+Overall role of features in the choice of different forecast-model selection.
 
 
-.full-width[.content-box-yellow[**Peeking inside FFORMS**
 
-- Which features are the most important? 
+- Permutation-based variable importance
+- Mean decrease in Gini coefficient
+- Partial dependence plots (Jerome H. Friedman, 2001)
+- Individual Conditional Expectation (ICE) curves (Goldstein et al.,2015; Zhao and Hastie, 2017)
+                                                       
+---
 
-- Where are they important?]]
+## Partial dependence plots and ICE curves
+
+---
+class: inverse, middle, center
+## Feature importance plot for yearly series
+
+---
+background-image: url(img/m1.png)
+background-size: contain
+
+
+---
+class: inverse, middle, center
+## Feature importance plot for monthly series
+
+---
+background-image: url(img/m1.png)
+background-size: contain
+
+---
+background-image: url(img/m2.png)
+background-size: contain
+
+---
+background-image: url(img/m3.png)
+background-size: contain
+
+---
+
+
+## Partial dependency plots for hourly data: entropy
+
+-  forecastability of a time series
+
+.pull-left[
+
+&lt;img src="img/entropy.png" width="3171" /&gt;
+
+]
+
+.pull-right[
+
+&lt;img src="img/en_pdp4.png" width="2620" /&gt;
+
+
+]
+                                                       
+---
+
+## Interaction effect
+
+- Friedman's H-statistic 
+
+    fraction of variance of two-variable partial dependency not captured by sum of the respective individual partial dependencies.
+    
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+&lt;img src="img/htwopdp1-1.png" width="1920" /&gt;
+
+
+
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+&lt;img src="img/htwopdp3-1.png" width="1920" /&gt;
+
+
+---
+class:  middle, inverse
+
+## Local interpretability
+
+---
+background-image: url(img/local1.png)
+background-size: contain
+
+---
+background-image: url(img/local2.png)
+background-size: contain
+
+
+---
+background-image: url(img/local3.png)
+background-size: contain
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

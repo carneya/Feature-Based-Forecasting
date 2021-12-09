@@ -38,7 +38,25 @@ style_mono_accent(
 
 
 ```{r setup, include=FALSE}
+library(knitr)
 options(htmltools.dir.version = FALSE)
+read_chunk("src/main.R")
+library(ggplot2)
+library(patchwork)
+library(reshape2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+library(RColorBrewer)
+library(dplyr)
+library(forecast)
+library(tidyr)
+library(rlang)
+library(tidyverse)
 ```
 class: center, middle
 
@@ -191,8 +209,8 @@ df <- data.frame(v1=factor(c("Data wrangling",
   "Data Visualization", 
                                 "Data Visualization", 
                                 "Data Preprocessing",
-                                "Data Visualization", 
-  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+                                "Communication", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
     
                                 
                                 ), levels=c("Data wrangling",
@@ -215,8 +233,8 @@ df <- data.frame(v1=factor(c("Data wrangling",
   "Data Visualization", 
                                 "Data Visualization", 
                                 "Data Preprocessing",
-                                "Data Visualization", 
-  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+                                "Communication", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
     
                                 
                                 ), levels=c("Data wrangling",
@@ -240,7 +258,7 @@ df <- data.frame(v1=factor(c("Data wrangling",
                                 "Data Visualization", 
                                 "Data Preprocessing",
                                 "Data Visualization", 
-  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
     
                                 
                                 ), levels=c("Data wrangling",
@@ -869,20 +887,178 @@ background-size: contain
 `seer` package in R
 
 ---
+## Results: M4 Competition data
 
+\begin{table}[!h]
+\centering\scriptsize\tabcolsep=0.12cm
+\begin{tabular}{l|rrrrrr}
+ & Yearly & Quarterly & Monthly & Weekly & Daily & Hourly \\\hline
+\textcolor{red}{FFORMS} & 3.17 &  1.20 &  0.98&  2.31& 3.57 &  0.84\\\hline
+auto.arima & 3.40 &1.17  &0.93  & 2.55 &  -& - \\
+ets & 3.44 &  1.16& 0.95 &  -&-  &  -\\
+theta & 3.37 &1.24  & 0.97 &2.64  & 3.33 & 1.59 \\
+rwd & 3.07 & 1.33 & 1.18  & 2.68  & 3.25 & 11.45 \\
+rw & 3.97 & 1.48 & 1.21  &2.78  & 3.27 & 11.60 \\
+nn & 4.06 & 1.55 &  1.14 &4.04 & 3.90 & 1.09 \\
+stlar & - & 2.02 &  1.33& 3.15 & 4.49 & 1.49 \\
+snaive & - &  1.66& 1.26 &  2.78& 24.46 & 2.86 \\
+tbats & - & 1.19 &  1.05& 2.49 & 3.27 &  1.30\\
+wn & 13.42 &  6.50&  4.11&  49.91& 38.07 & 11.68 \\
+mstlarima & - & - &  - & - & 3.84 &  1.12\\
+mstlets & - &  - &  - &  - & 3.73 &  1.23\\
+combination (mean) & 4.09 & 1.58 &  1.16&6.96  & 7.94 & 3.93 \\\hline
+M4-1st & 2.98 & 1.12 &  0.88& 2.36 & 3.45 & 0.89\\
+M4-2nd & 3.06 & 1.11 &  0.89& 2.11 & 3.34 & 0.81\\
+M4-3rd & 3.13 & 1.23 &  0.95& 2.16 & 2.64 & 0.87\\\hline
+\end{tabular}
+\end{table}
+
+
+---
+class: inverse
 background-image: url(img/forest.jpg)
 background-size: cover
 
-# Random forest
+## Random forest
+
+---
+class: center, inverse, middle
+background-image: url(img/forest.jpg)
+background-size: cover
+
+# Can we trust ML-algorithms if we don't know how it works?
+
+---
+class: inverse
+background-image: url(img/forest.jpg)
+background-size: cover
+
+## Peeking inside FFORMS Random forest
+
+.full-width[.content-box-yellow[.black[
+
+- **Which** features are the most important? 
+
+- **Where** are they important?
+
+- **How** are they important?
+
+- **When and how** are features linked with the prediction
+outcome?
+
+- **When and how strongly** do features interact with
+other features?]]]
+
 
 ---
 
-background-image: url(img/forest.jpg)
-background-size: cover
+## Global explanation of feature contribution
+
+Overall role of features in the choice of different forecast-model selection.
 
 
-.full-width[.content-box-yellow[**Peeking inside FFORMS**
 
-- Which features are the most important? 
+- Permutation-based variable importance
+- Mean decrease in Gini coefficient
+- Partial dependence plots (Jerome H. Friedman, 2001)
+- Individual Conditional Expectation (ICE) curves (Goldstein et al.,2015; Zhao and Hastie, 2017)
+                                                       
+---
 
-- Where are they important?]]
+## Partial dependence plots and ICE curves
+
+---
+class: inverse, middle, center
+## Feature importance plot for yearly series
+
+---
+background-image: url(img/m1.png)
+background-size: contain
+
+
+---
+class: inverse, middle, center
+## Feature importance plot for monthly series
+
+---
+background-image: url(img/m1.png)
+background-size: contain
+
+---
+background-image: url(img/m2.png)
+background-size: contain
+
+---
+background-image: url(img/m3.png)
+background-size: contain
+
+---
+
+
+## Partial dependency plots for hourly data: entropy
+
+-  forecastability of a time series
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::include_graphics("img/entropy.png")
+```
+
+]
+
+.pull-right[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::include_graphics("img/en_pdp4.png")
+```
+
+
+]
+                                                       
+---
+
+## Interaction effect
+
+- Friedman's H-statistic 
+
+    fraction of variance of two-variable partial dependency not captured by sum of the respective individual partial dependencies.
+    
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+knitr::include_graphics("img/htwopdp1-1.png")
+```
+
+
+
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+knitr::include_graphics("img/htwopdp3-1.png")
+```
+
+
+---
+class:  middle, inverse
+
+## Local interpretability
+
+---
+background-image: url(img/local1.png)
+background-size: contain
+
+---
+background-image: url(img/local2.png)
+background-size: contain
+
+
+---
+background-image: url(img/local3.png)
+background-size: contain

@@ -1065,6 +1065,23 @@ outcome?
 - **When and how strongly** do features interact with
 other features?]]]
 
+---
+
+## Vote probability matrix
+
+.pull-left[
+
+<img class="circle" src="img/newplot.png" width="500px" height="550px"/>
+
+
+]
+
+.pull-right[
+
+<iframe width="690" height="547" src="https://www.youtube.com/embed/XMQRb67gMYQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+]
+
 
 ---
 class: inverse, middle, center
@@ -1089,45 +1106,33 @@ Overall role of features in the choice of different forecast-model selection.
 - Individual Conditional Expectation (ICE) curves (Goldstein et al.,2015; Zhao and Hastie, 2017)
 
 ---
-Partial dependence plots and ICE curves
+class: inverse, middle, center
 
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p1.png")
-```
+##Partial dependence plots and ICE curves
 
 ---
-Partial dependence plots and ICE curves
+background-image: url(img/p1.png)
+background-size: contain
 
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p2.png")
-```                                                       
----
-Partial dependence plots and ICE curves
-
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p3.png")
-```  
 
 ---
- Partial dependence plots and ICE curves
-
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p4.png")
-```  
+background-image: url(img/p2.png)
+background-size: contain                                                 
+---
+background-image: url(img/p3.png)
+background-size: contain
 
 ---
-Partial dependence plots and ICE curves
-
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p6.png")
-```  
+background-image: url(img/p4.png)
+background-size: contain 
 
 ---
-Partial dependence plots and ICE curves
+background-image: url(img/p6.png)
+background-size: contain
 
-```{r, comment=NA, fig.width=15, echo=FALSE}
-include_graphics("img/p7.png")
-```  
+---
+background-image: url(img/p7.png)
+background-size: contain
 
 ---
 class: inverse, middle, center
@@ -1242,9 +1247,40 @@ background-size: contain
 .pull-left[
 
 
+<img class="circle" src="img/rob.jpeg" width="250px" height="300px"/>
+
+Professor Rob Hyndman
+
+Monash University
+
 ]
 
 .pull-right[
 
+<img class="circle" src="img/george.jpeg" width="200px" height="300px"/>
+
+Professor George Athanasopoulos
+
+Monash University
 
 ]
+
+---
+class: center, middle
+
+# Thank You!
+
+```{r, echo=FALSE}
+anicon::faa("twitter", animate="float", size=3, colour="lightblue")
+```
+
+```{r, echo=FALSE}
+anicon::faa("github", animate="float", size=3, colour="black")
+```
+
+# @thiyangt
+
+
+### web: https://thiyanga.netlify.app
+
+# email: ttalagala@sjp.ac.lk

@@ -521,7 +521,7 @@ library(ggpubr)
 # Extract required series
 series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
 color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-model <- c("Random walk with drift", "NAIVE", "Random walk", "SNAIVE", "ETS", "SARIMA")
+model <- c("Random walk with drift", "NAIVE", "Random walk", "NAIVE", "ETS", "SARIMA")
 six_series <- lapply(M3[series_id], function(u){u$x})
 p <- lapply(six_series,
 function(u) {autoplot(u) + xlab("") + ylab("")}
@@ -573,7 +573,7 @@ library(ggpubr)
 # Extract required series
 series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
 color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "SNAIVE", "ETS", "SARIMA")
+model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "NAIVE", "ETS", "SARIMA")
 six_series <- lapply(M3[series_id], function(u){u$x})
 p <- lapply(six_series,
 function(u) {autoplot(u) + xlab("") + ylab("")}
@@ -625,7 +625,7 @@ library(ggpubr)
 # Extract required series
 series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
 color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "SNAIVE", "ETS", "SARIMA")
+model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "NAIVE", "ETS", "SARIMA")
 six_series <- lapply(M3[series_id], function(u){u$x})
 p <- lapply(six_series,
 function(u) {autoplot(u) + xlab("") + ylab("")}
@@ -1139,7 +1139,7 @@ class: inverse, middle, center
 ## Feature importance plot for yearly series
 
 ---
-background-image: url(img/m1.png)
+background-image: url(img/y1.png)
 background-size: contain
 
 
